@@ -1,15 +1,21 @@
-import type { DriverPosition } from "@/lib/f1-data"
+import type { DriverPosition, BetType } from "@/lib/f1-data"
 import { DriverCard } from "./driver-card"
 import { Trophy, Medal, Award } from "lucide-react"
 
 interface RaceResultsProps {
   results: DriverPosition[]
   userBet?: string
+  betType?: BetType // Added bet type prop
 }
 
-export function RaceResults({ results, userBet }: RaceResultsProps) {
+export function RaceResults({ results, userBet, betType = "winner" }: RaceResultsProps) {
   const winner = results[0]
-  const isWinningBet = userBet?.toLowerCase().trim() === winner.driver.toLowerCase()
+  const podium = results.slice(0, 3)
+
+  const isWinningBet =
+    betType === "winner"
+      ? userBet?.toLowerCase().trim() === winner.driver.toLowerCase()
+      : podium.some((driver) => driver.driver.toLowerCase() === userBet?.toLowerCase().trim())
 
   const getPodiumIcon = (position: number) => {
     switch (position) {
@@ -38,18 +44,25 @@ export function RaceResults({ results, userBet }: RaceResultsProps) {
             <Trophy className="w-8 h-8 text-yellow-500" />
           </div>
 
-          {/* Bet Result */}
           <div className={`text-lg font-semibold ${isWinningBet ? "text-green-600" : "text-red-600"}`}>
             {isWinningBet ? (
-              "🎉 Congratulations! You guessed correctly!"
+              <div className="space-y-1">
+                <div>🎉 Congratulations! Your bet was successful!</div>
+                <div className="text-sm">
+                  {betType === "winner" ? "You correctly predicted the winner!" : "Your driver made the podium!"}
+                </div>
+              </div>
             ) : (
-              <>
-                😔 Sorry, you lost your bet.
-                <br />
-                <span className="text-sm">
-                  You chose: {userBet} | Winner: {winner.driver}
-                </span>
-              </>
+              <div className="space-y-1">
+                <div>😔 Sorry, your bet didn't win.</div>
+                <div className="text-sm">
+                  You chose: {userBet} ({betType === "winner" ? "Winner" : "Podium"} bet)
+                  <br />
+                  {betType === "winner"
+                    ? `The winner was: ${winner.driver}`
+                    : `Podium: ${podium.map((p) => p.driver).join(", ")}`}
+                </div>
+              </div>
             )}
           </div>
         </div>
@@ -62,7 +75,15 @@ export function RaceResults({ results, userBet }: RaceResultsProps) {
                 {getPodiumIcon(result.position)}
                 <span className="ml-2 text-lg font-bold">{index === 0 ? "1st" : index === 1 ? "2nd" : "3rd"}</span>
               </div>
-              <DriverCard driverPosition={result} showPosition={false} className="hover:scale-100" />
+              <DriverCard
+                driverPosition={result}
+                showPosition={false}
+                className={`hover:scale-100 ${
+                  userBet?.toLowerCase().trim() === result.driver.toLowerCase()
+                    ? "ring-2 ring-primary ring-offset-2"
+                    : ""
+                }`}
+              />
             </div>
           ))}
         </div>
@@ -73,7 +94,13 @@ export function RaceResults({ results, userBet }: RaceResultsProps) {
         <h3 className="text-xl font-semibold mb-4">Full Race Results</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {results.map((result) => (
-            <DriverCard key={result.driver} driverPosition={result} className="hover:scale-100" />
+            <DriverCard
+              key={result.driver}
+              driverPosition={result}
+              className={`hover:scale-100 ${
+                userBet?.toLowerCase().trim() === result.driver.toLowerCase() ? "ring-2 ring-primary ring-offset-2" : ""
+              }`}
+            />
           ))}
         </div>
       </div>

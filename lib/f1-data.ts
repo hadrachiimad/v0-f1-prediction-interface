@@ -88,3 +88,37 @@ export function getDriverColor(driver: string): string {
 
   return colorMap[driver] || "#6b7280"
 }
+
+export type BetType = "winner" | "podium"
+
+export interface GameStats {
+  balance: number
+  totalRaces: number
+  wins: number
+  losses: number
+}
+
+export function calculatePayout(betType: BetType, betAmount: number, isWin: boolean): number {
+  if (!isWin) return 0
+
+  if (betType === "winner") {
+    return betAmount * 3 // 3x payout for winner
+  } else if (betType === "podium") {
+    return betAmount * 2 // 2x payout for podium
+  }
+
+  return 0
+}
+
+export function checkBetResult(userBet: string, betType: BetType, results: DriverPosition[]): boolean {
+  const sortedResults = results.sort((a, b) => a.position - b.position)
+
+  if (betType === "winner") {
+    return userBet.toLowerCase().trim() === sortedResults[0].driver.toLowerCase()
+  } else if (betType === "podium") {
+    const podium = [sortedResults[0].driver, sortedResults[1].driver, sortedResults[2].driver]
+    return podium.some((driver) => driver.toLowerCase() === userBet.toLowerCase().trim())
+  }
+
+  return false
+}
