@@ -2,7 +2,7 @@
 
 import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { type DriverPosition, getDriverColor } from "@/lib/f1-data"
+import { type DriverPosition, getDriverColor, getTeamColor } from "@/lib/f1-data"
 import { cn } from "@/lib/utils"
 
 interface DriverCardProps {
@@ -20,8 +20,9 @@ export function DriverCard({
   showPosition = true,
   className,
 }: DriverCardProps) {
-  const { driver, position } = driverPosition
+  const { driver, team, position } = driverPosition
   const driverColor = getDriverColor(driver)
+  const teamColor = getTeamColor(team)
 
   return (
     <Card
@@ -37,8 +38,11 @@ export function DriverCard({
           <div className="w-4 h-4 rounded-full" style={{ backgroundColor: driverColor }} />
           <div>
             <h3 className="font-semibold text-sm">{driver}</h3>
+            <Badge variant="outline" className="text-xs mt-1" style={{ borderColor: teamColor, color: teamColor }}>
+              {team}
+            </Badge>
             {showPosition && (
-              <Badge variant="secondary" className="text-xs mt-1">
+              <Badge variant="secondary" className="text-xs mt-1 ml-1">
                 P{position}
               </Badge>
             )}
