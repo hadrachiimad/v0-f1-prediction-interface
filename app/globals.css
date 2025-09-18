@@ -11,13 +11,13 @@
   --card-foreground: #374151;
   --popover: #ffffff;
   --popover-foreground: #4b5563;
-  --primary: #ea580c;
+  --primary: rgb(60, 9, 188);
   --primary-foreground: #ffffff;
-  --secondary: #f97316;
+  --secondary: rgb(112, 46, 46);
   --secondary-foreground: #ffffff;
   --muted: #f0fdf4;
   --muted-foreground: #374151;
-  --accent: #f97316;
+  --accent: rgb(191, 123, 72);
   --accent-foreground: #ffffff;
   --destructive: #dc2626;
   --destructive-foreground: #ffffff;
